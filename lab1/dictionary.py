@@ -1,1 +1,1 @@
-telefonbuch = dict([('jan', '123456789'), ('jason', '80085'), ('angelina', '426967'), ('christof', '31415926535897932348')])
+dictonary = dict([('jan', '123456789'), ('jason', '80085'), ('angelina', '426967'), ('christof', '31415926535897932348')])

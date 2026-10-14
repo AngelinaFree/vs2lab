@@ -39,29 +39,32 @@ class Server:
                         break  # stop if client stopped
 
                     message = data.decode('ascii').split()
-                    
+                    if not message:
+                        continue
                     if 'GETALL' == message[0]:
-                        self.getALL(connection)
-                    elif 'GET' == message[0]:
-                        self.get(connection,message[1])
+                        answer = self.getALL()
+                    elif 'GET' == message[0] and len(message) == 2:
+                        answer = self.get(message[1])
                     else:
-                        print('Fehler')
+                        print('Error')
+                    connection.send(answer.encode('ascii'))
                 connection.close()  # close the connection
             except socket.timeout:
                 pass  # ignore timeouts
         self.sock.close()
         self._logger.info("Server down.")
 
-    def get(self,connection, name):
-            eintrag = dictionary.telefonbuch[name]
-            connection.send(eintrag.encode('ascii'))  # return sent data plus an "*"
+    def get(self, name):
+        try:
+            return f'{name}: ' + dictionary.dictonary[name.lower()]
+        except:
+            return f'No entry for \"{name}\"'
 
-    def getALL(self,connection):
-            eintrag = ''
-            for name, nummer in dictionary.telefonbuch.items():
-                print('1')
-                eintrag += name + ' ' + nummer  + '\n'
-            connection.send(eintrag.encode('ascii'))
+    def getALL(self):
+            answer = ''
+            for name, number in dictionary.dictonary.items():
+                answer += f'{name}: {number}\n'
+            return answer
 
 
 
