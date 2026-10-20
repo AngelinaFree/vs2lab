@@ -27,14 +27,16 @@ class Server:
         self._logger.info("Server bound to socket " + str(self.sock))
 
     def serve(self):
-        """ Serve echo """
         self.sock.listen(1)
+        self._logger.info("Server listening...")
         while self._serving:  # as long as _serving (checked after connections or socket timeouts)
             try:
                 # pylint: disable=unused-variable
                 (connection, address) = self.sock.accept()  # returns new socket and address of client
+                self._logger.info("Client connected")
                 while True:  # forever
                     data = connection.recv(1024)
+                    self._logger.info("Data recieved")
                     if not data:
                         break  # stop if client stopped
 
@@ -46,9 +48,10 @@ class Server:
                     elif 'GET' == message[0] and len(message) == 2:
                         answer = self.get(message[1])
                     else:
-                        print('Error')
+                        self._logger.info("Bad Request")
                     connection.send(answer.encode('ascii'))
                 connection.close()  # close the connection
+                self._logger.info("Connection closed")
             except socket.timeout:
                 pass  # ignore timeouts
         self.sock.close()
@@ -80,10 +83,12 @@ class Client:
 
     def call(self, msg_in):
         """ Call server """
+        self.logger.info("Sending data")
         self.sock.send(msg_in.encode('ascii'))  # send encoded string as data
+        self.logger.info("Waiting for response")
         data = self.sock.recv(1024)  # receive the response
         msg_out = data.decode('ascii')
-        print(msg_out)  # print the result
+        self.logger.info("Data recieved")
         self.sock.close()  # close the connection
         self.logger.info("Client down.")
         return msg_out
