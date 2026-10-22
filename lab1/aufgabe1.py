@@ -49,6 +49,7 @@ class Server:
                         answer = self.get(message[1])
                     else:
                         self._logger.info("Bad Request")
+                        answer = 'Bad Request'
                     connection.send(answer.encode('ascii'))
                 connection.close()  # close the connection
                 self._logger.info("Connection closed")
