@@ -48,9 +48,10 @@ class Server:
                     elif 'GET' == message[0] and len(message) == 2:
                         answer = self.get(message[1])
                     else:
-                        self._logger.info("Bad Request")
-                        answer = 'Bad Request'
-                    connection.send(answer.encode('ascii'))
+                        self._logger.info("bad request")
+                        answer = 'bad request'
+                    connection.sendall(answer.encode('ascii'))
+                    break
                 connection.close()  # close the connection
                 self._logger.info("Connection closed")
             except socket.timeout:
@@ -59,16 +60,14 @@ class Server:
         self._logger.info("Server down.")
 
     def get(self, name):
+        name = name.lower()
         try:
-            return f'{name}: ' + dictionary.dictonary[name.lower()]
+            return f'{name}: ' + dictionary.dictonary[name]
         except:
             return f'No entry for \"{name}\"'
 
     def getALL(self):
-            answer = ''
-            for name, number in dictionary.dictonary.items():
-                answer += f'{name}: {number}\n'
-            return answer
+            return dictionary.to_string()
 
 
 
@@ -87,8 +86,15 @@ class Client:
         self.logger.info("Sending data")
         self.sock.send(msg_in.encode('ascii'))  # send encoded string as data
         self.logger.info("Waiting for response")
-        data = self.sock.recv(1024)  # receive the response
-        msg_out = data.decode('ascii')
+
+        frag = []
+        while True:
+            data = self.sock.recv(1024)  # receive the response
+            if data == b'':
+                break
+            frag.append(data)
+        arr = b''.join(frag)
+        msg_out = arr.decode('ascii')
         self.logger.info("Data recieved")
         self.sock.close()  # close the connection
         self.logger.info("Client down.")
