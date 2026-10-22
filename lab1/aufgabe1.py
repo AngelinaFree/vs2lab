@@ -60,6 +60,7 @@ class Server:
         self._logger.info("Server down.")
 
     def get(self, name):
+        print(name)
         name = name.lower()
         try:
             return f'{name}: ' + dictionary.dictonary[name]
@@ -99,6 +100,14 @@ class Client:
         self.sock.close()  # close the connection
         self.logger.info("Client down.")
         return msg_out
+
+
+    def get(self, name):
+        msg = "GET " +name
+        return self.call(msg)
+
+    def get_all(self):
+        return self.call("GETALL")
 
     def close(self):
         """ Close socket """
