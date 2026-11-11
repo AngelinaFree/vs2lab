@@ -31,15 +31,17 @@ class Client:
 
     ## Async in einem extra Thread
     def append_async(self, data, db_list, callback):
-
+        
+        self.append(data, db_list)
+        
         def worker():
-            self.result = self.append(data, db_list)
+
+            msgrcv = self.chan.receive_from(self.server)  # wait for response
+
             self.thread_finished = True
-            callback(self.result)
+            callback(msgrcv[1])
 
         thread = threading.Thread(target=worker)
-        msgrcv = self.chan.receive_from(self.server)
-        print(f'Server ACK: {msgrcv[1]}')
 
         return thread
 
@@ -49,9 +51,8 @@ class Client:
         msglst = (constRPC.APPEND, data, db_list)  # message payload
         self.chan.send_to(self.server, msglst)  # send msg to server
 
-        msgrcv = self.chan.receive_from(self.server)  # wait for response
-
-        return msgrcv[1]  # pass it to caller
+        msgrcv = self.chan.receive_from(self.server)
+        print(f'Server ACK: {msgrcv[1]}')
 
 
 class Server:
