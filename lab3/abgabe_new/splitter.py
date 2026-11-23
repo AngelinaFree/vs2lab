@@ -6,6 +6,8 @@ import zmq
 
 import constPipe
 
+print('Splitter started')
+
 file_path = './' + str(sys.argv[1])
 
 host = constPipe.SRC1  # check task src host

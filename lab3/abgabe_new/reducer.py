@@ -6,6 +6,8 @@ import zmq
 
 import constPipe
 
+print('Reducer started')
+
 
 context = zmq.Context()
 pull_socket = context.socket(zmq.PULL)
